@@ -1,7 +1,6 @@
 package com.rkerz.bestgithubrepos.common.repository
 
 import arrow.core.Either
-import com.rkerz.bestgithubrepos.overview.model.RepoOverview
 import retrofit2.HttpException
 import java.net.SocketTimeoutException
 
@@ -14,8 +13,8 @@ class GitHubRepoRetrofitRepository :
     private val retrofitService: GitHubRepoRetrofitService =
         RetrofitClient.createRepoService()
 
-    override suspend fun getRepoOverview(): Either<Int, RepoOverview> {
-        return try {
+    override suspend fun getRepoOverview() =
+        try {
             Either.right(retrofitService.listRepos())
         } catch (httpException: HttpException) {
             Either.left(httpException.code())
@@ -24,8 +23,16 @@ class GitHubRepoRetrofitRepository :
         } catch (exception: Exception) {
             Either.left(ERROR_CODE_UNKNOWN)
         }
-    }
+
 
     override suspend fun getRepoDetails(owner: String, repoName: String) =
-        retrofitService.getRepoDetails(owner, repoName)
+        try {
+            Either.right(retrofitService.getRepoDetails(owner, repoName))
+        } catch (httpException: HttpException) {
+            Either.left(httpException.code())
+        } catch (socketTimeOutException: SocketTimeoutException) {
+            Either.left(ERROR_CODE_TIMEOUT)
+        } catch (exception: java.lang.Exception) {
+            Either.left(ERROR_CODE_UNKNOWN)
+        }
 }

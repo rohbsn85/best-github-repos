@@ -8,5 +8,5 @@ interface GitHubRepoRepository {
 
     suspend fun getRepoOverview(): Either<Int, RepoOverview>
 
-    suspend fun getRepoDetails(owner: String, repoName: String): Repo
+    suspend fun getRepoDetails(owner: String, repoName: String): Either<Int, Repo>
 }

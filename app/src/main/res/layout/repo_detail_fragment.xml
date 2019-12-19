@@ -36,7 +36,7 @@
         app:layout_constraintStart_toStartOf="@id/repoOwner"/>
 
     <ImageView
-        android:id="@+id/starImage"
+        android:id="@+id/repoStarImage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
@@ -50,9 +50,9 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"
         tools:text="0"
-        app:layout_constraintTop_toTopOf="@id/starImage"
-        app:layout_constraintBottom_toBottomOf="@id/starImage"
-        app:layout_constraintStart_toEndOf="@id/starImage"/>
+        app:layout_constraintTop_toTopOf="@id/repoStarImage"
+        app:layout_constraintBottom_toBottomOf="@id/repoStarImage"
+        app:layout_constraintStart_toEndOf="@id/repoStarImage"/>
 
     <TextView
         android:id="@+id/repoFollowerCount"
@@ -60,9 +60,46 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         tools:text="Follower count"
-        app:layout_constraintTop_toBottomOf="@id/starImage"
-        app:layout_constraintStart_toStartOf="@id/starImage"/>
+        app:layout_constraintTop_toBottomOf="@id/repoStarImage"
+        app:layout_constraintStart_toStartOf="@id/repoStarImage"/>
 
+    <ProgressBar
+        android:id="@+id/repoProgress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
+    <LinearLayout
+        android:id="@+id/repoErrorLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/repoErrorText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="@android:color/holo_red_dark"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/repoTryAgainButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/try_again" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

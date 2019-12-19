@@ -4,4 +4,6 @@
     <string name="try_again">Try Again</string>
     <string name="by_owner">by: %1$s</string>
     <string name="follower_count">Follower count: %1$d</string>
+    <string name="language">Language: %1$s</string>
+    <string name="n_a">n/a</string>
 </resources>

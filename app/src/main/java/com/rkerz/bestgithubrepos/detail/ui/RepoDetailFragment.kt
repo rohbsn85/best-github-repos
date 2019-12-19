@@ -40,22 +40,66 @@ class RepoDetailFragment : Fragment() {
     }
 
     private fun showDetailsFor(repo: Repo) {
+        repoName.visibility = View.VISIBLE
+        repoOwner.visibility = View.VISIBLE
+        repoStarCountValue.visibility = View.VISIBLE
+        repoStarImage.visibility = View.VISIBLE
+        repoFollowerCount.visibility = View.VISIBLE
+        repoLanguage.visibility = View.VISIBLE
+
         with(repo) {
             repoName.text = name
             repoOwner.text = getString(R.string.by_owner, owner.name)
             repoFollowerCount.text = getString(R.string.follower_count, watcherCount)
-            repoLanguage.text = language
+            repoLanguage.text = getString(R.string.language, language ?: getString(R.string.n_a))
             repoStarCountValue.text = starCount.toString()
         }
+    }
 
+    private fun hideDetails() {
+        repoName.visibility = View.GONE
+        repoOwner.visibility = View.GONE
+        repoStarCountValue.visibility = View.GONE
+        repoStarImage.visibility = View.GONE
+        repoFollowerCount.visibility = View.GONE
+        repoLanguage.visibility = View.GONE
+    }
+
+    private fun showError(errorCode: Int) {
+        repoErrorLayout.visibility = View.VISIBLE
+        repoErrorText.text = getString(R.string.error_text, errorCode)
+    }
+
+    private fun hideError() {
+        repoErrorLayout.visibility = View.GONE
+    }
+
+    private fun showLoading() {
+        repoProgress.visibility = View.VISIBLE
+    }
+
+    private fun hideLoading() {
+        repoProgress.visibility = View.GONE
     }
 
     private fun observeRepoDetails() {
-        viewModel.reopoDetails().observe(this, Observer {
+        viewModel.repoDetails().observe(this, Observer {
             when (it) {
-                is RepoDetailRequest.Success -> showDetailsFor(it.repo)
-                is RepoDetailRequest.Error -> TODO()
-                is RepoDetailRequest.Loading -> TODO()
+                is RepoDetailRequest.Success -> {
+                    hideError()
+                    hideLoading()
+                    showDetailsFor(it.repo)
+                }
+                is RepoDetailRequest.Error -> {
+                    hideLoading()
+                    hideDetails()
+                    showError(it.errorCode)
+                }
+                is RepoDetailRequest.Loading -> {
+                    hideError()
+                    hideDetails()
+                    showLoading()
+                }
             }
         })
     }
