@@ -1,35 +1,31 @@
 package com.rkerz.bestgithubrepos.overview.ui
 
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import arrow.core.Either
-import com.rkerz.bestgithubrepos.common.model.RepoOverview
-import com.rkerz.bestgithubrepos.overview.repository.GitHubRepoRepository
+import com.rkerz.bestgithubrepos.common.repository.GitHubRepoRepository
+import com.rkerz.bestgithubrepos.overview.model.RepoOverviewRequest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class ReposOverviewViewModel(private val repository: GitHubRepoRepository) : ViewModel() {
 
-    private val repoList: MutableLiveData<RepoOverview> = MutableLiveData()
-    private val error: MutableLiveData<Int> = MutableLiveData()
-    private val loading: MutableLiveData<Boolean> = MutableLiveData()
+    private val repoOverviewRequest: MutableLiveData<RepoOverviewRequest> = MutableLiveData()
 
-    fun repoList(): LiveData<RepoOverview> = repoList
-    fun error(): LiveData<Int> = error
-    fun loading(): LiveData<Boolean> = loading
+    fun repoOverview(): LiveData<RepoOverviewRequest> = repoOverviewRequest
 
     fun fetchRepos() {
-        loading.value = true
+        if (repoOverviewRequest.value !is RepoOverviewRequest.Success) {
+            repoOverviewRequest.value = RepoOverviewRequest.Loading
+        }
         viewModelScope.launch {
-            when (val callResult = callRepository()) {
-                is Either.Left -> {
-                    error.value = callResult.a
-                }
-                is Either.Right -> {
-                    repoList.value = callResult.b
-                }
+            when (val repoOverviewCall = callRepository()) {
+                is Either.Right -> repoOverviewRequest.value = RepoOverviewRequest.Success(repoOverviewCall.b)
+                is Either.Left -> repoOverviewRequest.value = RepoOverviewRequest.Error(repoOverviewCall.a)
             }
-            loading.value = false
         }
     }
 

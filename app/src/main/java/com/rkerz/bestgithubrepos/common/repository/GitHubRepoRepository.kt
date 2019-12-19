@@ -1,8 +1,8 @@
-package com.rkerz.bestgithubrepos.overview.repository
+package com.rkerz.bestgithubrepos.common.repository
 
 import arrow.core.Either
 import com.rkerz.bestgithubrepos.common.model.Repo
-import com.rkerz.bestgithubrepos.common.model.RepoOverview
+import com.rkerz.bestgithubrepos.overview.model.RepoOverview
 
 interface GitHubRepoRepository {
 

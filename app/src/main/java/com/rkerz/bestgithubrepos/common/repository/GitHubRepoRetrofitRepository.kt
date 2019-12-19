@@ -1,7 +1,7 @@
-package com.rkerz.bestgithubrepos.overview.repository
+package com.rkerz.bestgithubrepos.common.repository
 
 import arrow.core.Either
-import com.rkerz.bestgithubrepos.common.model.RepoOverview
+import com.rkerz.bestgithubrepos.overview.model.RepoOverview
 import retrofit2.HttpException
 import java.net.SocketTimeoutException
 
@@ -11,7 +11,7 @@ const val ERROR_CODE_UNKNOWN = -1
 class GitHubRepoRetrofitRepository :
     GitHubRepoRepository {
 
-    private val retrofitService: GitHubRepoRetrofit =
+    private val retrofitService: GitHubRepoRetrofitService =
         RetrofitClient.createRepoService()
 
     override suspend fun getRepoOverview(): Either<Int, RepoOverview> {

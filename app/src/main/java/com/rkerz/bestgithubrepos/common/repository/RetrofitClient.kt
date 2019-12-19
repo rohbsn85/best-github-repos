@@ -1,4 +1,4 @@
-package com.rkerz.bestgithubrepos.overview.repository
+package com.rkerz.bestgithubrepos.common.repository
 
 import com.google.gson.GsonBuilder
 import com.iconmobile.core.bestgithubrepos.BuildConfig
@@ -9,7 +9,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
 
-    fun createRepoService(): GitHubRepoRetrofit {
+    fun createRepoService(): GitHubRepoRetrofitService {
         val interceptor = HttpLoggingInterceptor()
 
         if (BuildConfig.DEBUG) {
@@ -22,7 +22,7 @@ object RetrofitClient {
             .client(OkHttpClient.Builder().addInterceptor(interceptor).build())
             .baseUrl("https://api.github.com/")
             .addConverterFactory(GsonConverterFactory.create(GsonBuilder().create()))
-            .build().create(GitHubRepoRetrofit::class.java)
+            .build().create(GitHubRepoRetrofitService::class.java)
     }
 
 }

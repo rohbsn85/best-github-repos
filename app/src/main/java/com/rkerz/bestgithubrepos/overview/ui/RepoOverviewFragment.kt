@@ -10,7 +10,8 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.iconmobile.core.bestgithubrepos.R
-import com.rkerz.bestgithubrepos.common.model.RepoOverview
+import com.rkerz.bestgithubrepos.overview.model.RepoOverview
+import com.rkerz.bestgithubrepos.overview.model.RepoOverviewRequest
 import kotlinx.android.synthetic.main.repo_overview_fragment.*
 
 class RepoOverviewFragment : Fragment() {
@@ -42,9 +43,7 @@ class RepoOverviewFragment : Fragment() {
         }
 
         initRecyclerView()
-        observeRepoOverview()
-        observeError()
-        observeLoading()
+        observeRepoOverviewRequest()
     }
 
     override fun onResume() {
@@ -62,41 +61,51 @@ class RepoOverviewFragment : Fragment() {
     }
 
     private fun showError(errorCode: Int) {
-        repoOverviewRecyclerView.visibility = View.GONE
         errorLayout.visibility = View.VISIBLE
         errorText.text = getString(R.string.error_text, errorCode)
     }
 
-    private fun updateRepoOverview(repoOverview: RepoOverview) {
+    private fun hideError() {
         errorLayout.visibility = View.GONE
+    }
+
+    private fun showRepoOverview(repoOverview: RepoOverview) {
         repoOverviewRecyclerView.visibility = View.VISIBLE
         repoAdapter.repos = repoOverview.repoList
         repoAdapter.notifyDataSetChanged()
     }
 
-    private fun showLoading(isLoading: Boolean) {
-        if (isLoading) {
-            errorLayout.visibility = View.GONE
-            repoOverviewRecyclerView.visibility = View.GONE
-        }
-        repoOverviewProgress.visibility = if (isLoading) View.VISIBLE else View.GONE
+    private fun hideRepoOverview() {
+        repoOverviewRecyclerView.visibility = View.GONE
     }
 
-    private fun observeRepoOverview() {
-        viewModel.repoList().observe(this, Observer {
-            updateRepoOverview(it)
-        })
+    private fun showLoading() {
+        repoOverviewProgress.visibility = View.VISIBLE
     }
 
-    private fun observeError() {
-        viewModel.error().observe(this, Observer {
-            showError(it)
-        })
+    private fun hideLoading() {
+        repoOverviewProgress.visibility = View.GONE
     }
 
-    private fun observeLoading() {
-        viewModel.loading().observe(this, Observer {
-            showLoading(it)
+    private fun observeRepoOverviewRequest() {
+        viewModel.repoOverview().observe(this, Observer {
+            when (it) {
+                is RepoOverviewRequest.Loading -> {
+                    hideError()
+                    hideRepoOverview()
+                    showLoading()
+                }
+                is RepoOverviewRequest.Error -> {
+                    hideLoading()
+                    hideRepoOverview()
+                    showError(it.errorCode)
+                }
+                is RepoOverviewRequest.Success -> {
+                    hideLoading()
+                    hideError()
+                    showRepoOverview(it.repoOverview)
+                }
+            }
         })
     }
 
