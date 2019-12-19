@@ -1,13 +1,14 @@
-package com.iconmobile.core.bestgithubrepos.overview.repository
+package com.rkerz.bestgithubrepos.overview.repository
 
-import com.iconmobile.core.bestgithubrepos.common.model.Repo
+import com.rkerz.bestgithubrepos.common.model.Repo
+import com.rkerz.bestgithubrepos.common.model.RepoOverview
 import retrofit2.http.GET
 import retrofit2.http.Path
 
 interface GitHubRepoRetrofit {
 
     @GET("/search/repositories?q=stars:>=1000&sort=stars&order=desc")
-    suspend fun listRepos(): List<Repo>
+    suspend fun listRepos(): RepoOverview
 
     @GET("/repos/{owner}/{repo}")
     suspend fun getRepoDetails(

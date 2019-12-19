@@ -1,4 +1,4 @@
-package com.iconmobile.core.bestgithubrepos.overview.ui
+package com.rkerz.bestgithubrepos.detail.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,6 +8,6 @@ class RepoDetailViewModel : ViewModel() {
     // TODO: Implement the ViewModel
 
     fun fetchRepos() {
-        viewModelScope.launch {  }
+        viewModelScope.launch { }
     }
 }

@@ -1,8 +1,9 @@
-package com.iconmobile.core.bestgithubrepos
+package com.rkerz.bestgithubrepos
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.iconmobile.core.bestgithubrepos.overview.ui.RepoOverviewFragment
+import com.iconmobile.core.bestgithubrepos.R
+import com.rkerz.bestgithubrepos.overview.ui.RepoOverviewFragment
 
 class MainActivity : AppCompatActivity() {
 
