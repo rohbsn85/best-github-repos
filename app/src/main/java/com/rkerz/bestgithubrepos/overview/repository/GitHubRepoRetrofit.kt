@@ -7,7 +7,7 @@ import retrofit2.http.Path
 
 interface GitHubRepoRetrofit {
 
-    @GET("/search/repositories?q=stars:>=1000&sort=stars&order=desc")
+    @GET("/search/repositories?q=stars:>=1000&sort=stars&order=desc&per_page=100")
     suspend fun listRepos(): RepoOverview
 
     @GET("/repos/{owner}/{repo}")
