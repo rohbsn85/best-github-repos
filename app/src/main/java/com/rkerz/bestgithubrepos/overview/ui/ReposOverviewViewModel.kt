@@ -8,6 +8,7 @@ import arrow.core.Either
 import com.rkerz.bestgithubrepos.common.repository.GitHubRepoRepository
 import com.rkerz.bestgithubrepos.overview.model.RepoOverviewRequest
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -22,9 +23,14 @@ class ReposOverviewViewModel(private val repository: GitHubRepoRepository) : Vie
             repoOverviewRequest.value = RepoOverviewRequest.Loading
         }
         viewModelScope.launch {
-            when (val repoOverviewCall = callRepository()) {
-                is Either.Right -> repoOverviewRequest.value = RepoOverviewRequest.Success(repoOverviewCall.b)
-                is Either.Left -> repoOverviewRequest.value = RepoOverviewRequest.Error(repoOverviewCall.a)
+            while (true) {
+                when (val repoOverviewCall = callRepository()) {
+                    is Either.Right -> repoOverviewRequest.value =
+                        RepoOverviewRequest.Success(repoOverviewCall.b)
+                    is Either.Left -> repoOverviewRequest.value =
+                        RepoOverviewRequest.Error(repoOverviewCall.a)
+                }
+                delay(10_000)
             }
         }
     }

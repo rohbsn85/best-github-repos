@@ -8,6 +8,7 @@ import arrow.core.Either
 import com.rkerz.bestgithubrepos.common.repository.GitHubRepoRepository
 import com.rkerz.bestgithubrepos.detail.model.RepoDetailRequest
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -23,11 +24,14 @@ class RepoDetailViewModel(private val repository: GitHubRepoRepository) : ViewMo
         }
 
         viewModelScope.launch {
-            when (val repoDetailCall = callRepository(ownerName, repoName)) {
-                is Either.Left -> repoDetailRequest.value =
-                    RepoDetailRequest.Error(repoDetailCall.a)
-                is Either.Right -> repoDetailRequest.value =
-                    RepoDetailRequest.Success(repoDetailCall.b)
+            while (true) {
+                when (val repoDetailCall = callRepository(ownerName, repoName)) {
+                    is Either.Left -> repoDetailRequest.value =
+                        RepoDetailRequest.Error(repoDetailCall.a)
+                    is Either.Right -> repoDetailRequest.value =
+                        RepoDetailRequest.Success(repoDetailCall.b)
+                }
+                delay(10_000)
             }
         }
     }
