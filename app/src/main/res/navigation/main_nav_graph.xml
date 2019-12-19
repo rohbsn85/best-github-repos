@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_nav_graph"
+    app:startDestination="@id/repoOverviewFragment">
+
+    <fragment
+        android:id="@+id/repoOverviewFragment"
+        android:name="com.rkerz.bestgithubrepos.overview.ui.RepoOverviewFragment"
+        android:label="repo_overview_fragment"
+        tools:layout="@layout/repo_overview_fragment" >
+        <action
+            android:id="@+id/action_repoOverviewFragment_to_repoDetailFragment"
+            app:destination="@id/repoDetailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/repoDetailFragment"
+        android:name="com.rkerz.bestgithubrepos.detail.ui.RepoDetailFragment"
+        android:label="RepoDetailFragment" >
+        <argument
+            android:name="repoOwner"
+            app:argType="string" />
+        <argument
+            android:name="repoName"
+            app:argType="string" />
+    </fragment>
+</navigation>

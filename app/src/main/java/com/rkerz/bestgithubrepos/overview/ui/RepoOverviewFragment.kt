@@ -7,22 +7,18 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.iconmobile.core.bestgithubrepos.R
+import com.rkerz.bestgithubrepos.common.model.Repo
 import com.rkerz.bestgithubrepos.overview.model.RepoOverview
 import com.rkerz.bestgithubrepos.overview.model.RepoOverviewRequest
 import kotlinx.android.synthetic.main.repo_overview_fragment.*
 
 class RepoOverviewFragment : Fragment() {
-
-    companion object {
-        fun newInstance() =
-            RepoOverviewFragment()
-    }
-
     private lateinit var viewModel: ReposOverviewViewModel
-    private val repoAdapter = RepoOverviewAdapter(listOf())
+    private val repoAdapter = RepoOverviewAdapter(listOf()) { repo -> showDetailsForRepo(repo) }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -50,6 +46,12 @@ class RepoOverviewFragment : Fragment() {
         super.onResume()
 
         viewModel.fetchRepos()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+
+        repoOverviewRecyclerView.adapter = null
     }
 
     private fun initRecyclerView() {
@@ -107,6 +109,16 @@ class RepoOverviewFragment : Fragment() {
                 }
             }
         })
+    }
+
+    private fun showDetailsForRepo(repo: Repo) {
+        val navAction =
+            RepoOverviewFragmentDirections.actionRepoOverviewFragmentToRepoDetailFragment(
+                repo.owner.name,
+                repo.name
+            )
+
+        findNavController().navigate(navAction)
     }
 
 }

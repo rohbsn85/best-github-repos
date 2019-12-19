@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.iconmobile.core.bestgithubrepos.R
 import com.rkerz.bestgithubrepos.common.model.Repo
 
-class RepoOverviewAdapter(var repos: List<Repo>) : RecyclerView.Adapter<RepoOverviewViewHolder>() {
+class RepoOverviewAdapter(var repos: List<Repo>, private val onRepoItemClickedListener: (Repo) -> Unit) : RecyclerView.Adapter<RepoOverviewViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
         RepoOverviewViewHolder(
@@ -21,6 +21,6 @@ class RepoOverviewAdapter(var repos: List<Repo>) : RecyclerView.Adapter<RepoOver
 
 
     override fun onBindViewHolder(holder: RepoOverviewViewHolder, position: Int) {
-        holder.bind(repos[position])
+        holder.bind(repos[position], onRepoItemClickedListener)
     }
 }
