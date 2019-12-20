@@ -53,11 +53,6 @@ class RepoDetailFragment : Fragment() {
         )
             .get(RepoDetailViewModel::class.java)
 
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
         repoTryAgainButton.setOnClickListener {
             observeRepoDetails()
         }

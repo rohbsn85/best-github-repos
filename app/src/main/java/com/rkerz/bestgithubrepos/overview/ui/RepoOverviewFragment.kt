@@ -54,10 +54,7 @@ class RepoOverviewFragment : Fragment() {
             this,
             RepoOverviewViewModelFactory()
         ).get(ReposOverviewViewModel::class.java)
-    }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
 
         tryAgainButton.setOnClickListener {
             observeRepoOverviewRequest()
