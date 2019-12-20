@@ -20,6 +20,27 @@ class RepoOverviewFragment : Fragment() {
     private lateinit var viewModel: ReposOverviewViewModel
     private val repoAdapter = RepoOverviewAdapter(listOf()) { repo -> showDetailsForRepo(repo) }
 
+    private val observer = Observer<RepoOverviewRequest> {
+        when (it) {
+            is RepoOverviewRequest.Loading -> {
+                hideError()
+                hideRepoOverview()
+                showLoading()
+            }
+            is RepoOverviewRequest.Error -> {
+                stopObserving()
+                hideLoading()
+                hideRepoOverview()
+                showError(it.errorCode)
+            }
+            is RepoOverviewRequest.Success -> {
+                hideLoading()
+                hideError()
+                showRepoOverview(it.repoOverview)
+            }
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -33,19 +54,17 @@ class RepoOverviewFragment : Fragment() {
             this,
             RepoOverviewViewModelFactory()
         ).get(ReposOverviewViewModel::class.java)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         tryAgainButton.setOnClickListener {
-            viewModel.fetchRepos()
+            observeRepoOverviewRequest()
         }
 
         initRecyclerView()
         observeRepoOverviewRequest()
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        viewModel.fetchRepos()
     }
 
     override fun onDestroyView() {
@@ -90,25 +109,11 @@ class RepoOverviewFragment : Fragment() {
     }
 
     private fun observeRepoOverviewRequest() {
-        viewModel.repoOverview().observe(this, Observer {
-            when (it) {
-                is RepoOverviewRequest.Loading -> {
-                    hideError()
-                    hideRepoOverview()
-                    showLoading()
-                }
-                is RepoOverviewRequest.Error -> {
-                    hideLoading()
-                    hideRepoOverview()
-                    showError(it.errorCode)
-                }
-                is RepoOverviewRequest.Success -> {
-                    hideLoading()
-                    hideError()
-                    showRepoOverview(it.repoOverview)
-                }
-            }
-        })
+        viewModel.repoOverviewRequestLiveData.observe(this, observer)
+    }
+
+    private fun stopObserving() {
+        viewModel.repoOverviewRequestLiveData.removeObserver(observer)
     }
 
     private fun showDetailsForRepo(repo: Repo) {

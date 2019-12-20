@@ -14,9 +14,29 @@ import com.rkerz.bestgithubrepos.detail.model.RepoDetailRequest
 import kotlinx.android.synthetic.main.repo_detail_fragment.*
 
 class RepoDetailFragment : Fragment() {
-    private lateinit var viewModel: RepoDetailViewModel
-
     private val navArgs: RepoDetailFragmentArgs by navArgs()
+    private val observer = Observer<RepoDetailRequest> {
+        when (it) {
+            is RepoDetailRequest.Success -> {
+                hideError()
+                hideLoading()
+                showDetailsFor(it.repo)
+            }
+            is RepoDetailRequest.Error -> {
+                stopObserving()
+                hideLoading()
+                hideDetails()
+                showError(it.errorCode)
+            }
+            is RepoDetailRequest.Loading -> {
+                hideError()
+                hideDetails()
+                showLoading()
+            }
+        }
+    }
+
+    private lateinit var viewModel: RepoDetailViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -27,16 +47,22 @@ class RepoDetailFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProviders.of(this, RepoDetailViewModelFactory())
+        viewModel = ViewModelProviders.of(
+            this,
+            RepoDetailViewModelFactory(navArgs.repoOwner, navArgs.repoName)
+        )
             .get(RepoDetailViewModel::class.java)
 
-        observeRepoDetails()
     }
 
-    override fun onResume() {
-        super.onResume()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        viewModel.fetchRepo(navArgs.repoOwner, navArgs.repoName)
+        repoTryAgainButton.setOnClickListener {
+            observeRepoDetails()
+        }
+
+        observeRepoDetails()
     }
 
     private fun showDetailsFor(repo: Repo) {
@@ -83,25 +109,11 @@ class RepoDetailFragment : Fragment() {
     }
 
     private fun observeRepoDetails() {
-        viewModel.repoDetails().observe(this, Observer {
-            when (it) {
-                is RepoDetailRequest.Success -> {
-                    hideError()
-                    hideLoading()
-                    showDetailsFor(it.repo)
-                }
-                is RepoDetailRequest.Error -> {
-                    hideLoading()
-                    hideDetails()
-                    showError(it.errorCode)
-                }
-                is RepoDetailRequest.Loading -> {
-                    hideError()
-                    hideDetails()
-                    showLoading()
-                }
-            }
-        })
+        viewModel.repoDetailRequestLiveData.observe(this, observer)
+    }
+
+    private fun stopObserving() {
+        viewModel.repoDetailRequestLiveData.removeObserver(observer)
     }
 
 }

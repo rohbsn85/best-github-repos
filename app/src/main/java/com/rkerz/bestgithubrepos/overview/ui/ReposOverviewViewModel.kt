@@ -1,37 +1,23 @@
 package com.rkerz.bestgithubrepos.overview.ui
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import arrow.core.Either
 import com.rkerz.bestgithubrepos.common.repository.GitHubRepoRepository
+import com.rkerz.bestgithubrepos.detail.model.RepoDetailRequest
 import com.rkerz.bestgithubrepos.overview.model.RepoOverviewRequest
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 
 class ReposOverviewViewModel(private val repository: GitHubRepoRepository) : ViewModel() {
 
-    private val repoOverviewRequest: MutableLiveData<RepoOverviewRequest> = MutableLiveData()
+    val repoOverviewRequestLiveData = liveData {
+        emit(RepoOverviewRequest.Loading)
 
-    fun repoOverview(): LiveData<RepoOverviewRequest> = repoOverviewRequest
-
-    fun fetchRepos() {
-        if (repoOverviewRequest.value !is RepoOverviewRequest.Success) {
-            repoOverviewRequest.value = RepoOverviewRequest.Loading
-        }
-        viewModelScope.launch {
-            while (true) {
-                when (val repoOverviewCall = callRepository()) {
-                    is Either.Right -> repoOverviewRequest.value =
-                        RepoOverviewRequest.Success(repoOverviewCall.b)
-                    is Either.Left -> repoOverviewRequest.value =
-                        RepoOverviewRequest.Error(repoOverviewCall.a)
-                }
-                delay(10_000)
+        while (true) {
+            when (val repoDetailCall = callRepository()) {
+                is Either.Left -> emit(RepoOverviewRequest.Error(repoDetailCall.a))
+                is Either.Right -> emit(RepoOverviewRequest.Success(repoDetailCall.b))
             }
+            delay(10_000)
         }
     }
 

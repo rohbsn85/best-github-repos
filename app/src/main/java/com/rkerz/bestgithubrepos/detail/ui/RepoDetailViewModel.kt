@@ -1,38 +1,26 @@
 package com.rkerz.bestgithubrepos.detail.ui
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import arrow.core.Either
 import com.rkerz.bestgithubrepos.common.repository.GitHubRepoRepository
 import com.rkerz.bestgithubrepos.detail.model.RepoDetailRequest
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 
-class RepoDetailViewModel(private val repository: GitHubRepoRepository) : ViewModel() {
+class RepoDetailViewModel(
+    private val repository: GitHubRepoRepository,
+    private val repoOwner: String,
+    private val repoName: String
+) : ViewModel() {
 
-    private val repoDetailRequest: MutableLiveData<RepoDetailRequest> = MutableLiveData()
+    val repoDetailRequestLiveData = liveData {
+        emit(RepoDetailRequest.Loading)
 
-    fun repoDetails(): LiveData<RepoDetailRequest> = repoDetailRequest
-
-    fun fetchRepo(ownerName: String, repoName: String) {
-        if (repoDetailRequest.value !is RepoDetailRequest.Success) {
-            repoDetailRequest.value = RepoDetailRequest.Loading
-        }
-
-        viewModelScope.launch {
-            while (true) {
-                when (val repoDetailCall = callRepository(ownerName, repoName)) {
-                    is Either.Left -> repoDetailRequest.value =
-                        RepoDetailRequest.Error(repoDetailCall.a)
-                    is Either.Right -> repoDetailRequest.value =
-                        RepoDetailRequest.Success(repoDetailCall.b)
-                }
-                delay(10_000)
+        while (true) {
+            when (val repoDetailCall = callRepository(repoOwner, repoName)) {
+                is Either.Left -> emit(RepoDetailRequest.Error(repoDetailCall.a))
+                is Either.Right -> emit(RepoDetailRequest.Success(repoDetailCall.b))
             }
+            delay(10_000)
         }
     }
 

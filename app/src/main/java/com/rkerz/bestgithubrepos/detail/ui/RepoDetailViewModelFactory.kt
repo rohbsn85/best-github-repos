@@ -4,10 +4,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.rkerz.bestgithubrepos.common.repository.GitHubRepoRetrofitRepository
 
-class RepoDetailViewModelFactory : ViewModelProvider.Factory {
+class RepoDetailViewModelFactory(private val repoOwner: String, private val repoName: String) :
+    ViewModelProvider.Factory {
 
     override fun <T : ViewModel?> create(modelClass: Class<T>) =
         RepoDetailViewModel(
-            GitHubRepoRetrofitRepository()
+            GitHubRepoRetrofitRepository(),
+            repoOwner,
+            repoName
         ) as T
 }
